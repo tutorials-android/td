@@ -61,25 +61,36 @@ Votre code doit compiler maintenant et vous devez 3 tâches sur fond bleu.
 
 
 #### Ajout de la data class Task
-- Dans un nouveau fichier, créer la data class `Task` qui a 2 attributs, un titre et une description. Ajouter une valeur par défaut à la description.
-- Dans le `TasksFragment`, remplacer la valeur de `tasks` par `arrayOf(Task("Task 1", "description 1"), Task("Task 2"), Task("Task 3"))`
+- Dans un nouveau fichier, créer la data class `Task` qui a 3 attributs, un id, un titre et une description. Ajouter une valeur par défaut à la description.
+- Dans le `TasksFragment`, remplacer la valeur de `tasks` par
+        
+        private val tasks = arrayOf(
+            Task(id = "id_1", title = "Task 1", description = "description 1"), 
+            Task(id = "id_2", title = "Task 2"), 
+            Task(id="id_3", title = "Task 3")
+        )
 - Corriger votre code afin qu'il compile de nouveau
 - Enfin afficher la description en dessous du titre
 
 Votre RecyclerView est prête !
 
-## Share Intent
-A écrire
+## Suppression d'une tache
+Dans le layout de votre ViewHolder, ajouter un bouton afin de pouvoir supprimer la tache associé. Vous pouvez utiliser l'icone `@android:drawable/ic_menu_delete`
 
-## FAB Button - création d'un nouvelle tache - LiveData
-A écrire
+- Transformer votre liste de taches `tasks` en MutableList afin de pouvoir la modifier 
+- Dans l'adapteur, ajouter le callback `onDeleteClickListener` qui prends en arguments une tache et ne renvoie rien
+- Linker ce callback au onClick de l'image que vous avez ajouté précédemment
+- Dans le fragment implementer le `onDeleteClickListener`, ce dernier supprime la tache passé en argument de la liste et notifie l'adapteur.
 
-## D'autres sujets ?
-Moshi et Retrofit, semaine d'aprés plutot non ? Je preferais bien focus sur ces points la avant
 
-## Exploration pour les plus smart : (l'un d'entre eux je ne sais pas encore lequel !)
+## FAB Button - création d'une nouvelle tache
+
+## Edition d'une tache
+
+
+## Bonus - Pour ceux qui sont rapides !
 - Faire en sorte qu'on puisse partager du texte depuis les autres app vers mon app et ouvrir le formulaire de création d'une tache.
-- Mini mode offline
+- OnLongClick sur les taches permettre de partager la tache dans une autre application
 
 [lien][1]
 
