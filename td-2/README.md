@@ -80,18 +80,55 @@ Dans le layout de votre ViewHolder, ajouter un bouton afin de pouvoir supprimer 
 - Transformer votre liste de taches `tasks` en MutableList afin de pouvoir la modifier 
 - Dans l'adapteur, ajouter le callback `onDeleteClickListener` qui prends en arguments une tache et ne renvoie rien
 - Linker ce callback au onClick de l'image que vous avez ajouté précédemment
-- Dans le fragment implementer le `onDeleteClickListener`, ce dernier supprime la tache passé en argument de la liste et notifie l'adapteur.
+- Dans le fragment implementer le `onDeleteClickListener`, il doit supprimer la tache passée en argument de la liste et notifie l'adapteur.
 
 
-## FAB Button - création d'une nouvelle tache
+- Que se passe t'il si vous tournez votre téléphone ?
+
+## Floating Action Button (FAB) - Création d'une nouvelle tache
+#### Ne faites pas ça chez vous !
+Afin de pouvoir créer et éditer les taches nous allons créer un `object`, un object est un élément ne contenant que des fonctions/attributs statiques. C'est une trés **mauvaise pratique** mais a l'avantage de puvoir etre mis en place facilement.
+
+Dans le prochain cours, nous verrons les ViewModelProviders les LiveData qui permet à plusieurs élément d'écouter et d'etre notifier de tous les changements sur un objet (comme une liste de tâche par exemple)
+
+
+#### TaskViewModel
+- Créer l'objet `TaskViewModel`
+- Déplacer le `val tasks = ...` dedans
+- Déplacer également le code qui supprime de la tache de la liste
+
+#### Ajout du FAB
+- Ajouter le FAB dans le layout de l'activité principale
+- Dans l'activité principale onClick ouvrira un nouvelle activité, `TaskFormActivity`
+- Pour ouvrir une activité, on utilise les `intent` et la méthode `startActivity`
+
+#### TaskFormActivity
+- Créer la nouvelle Activity, n'oubliez pas de la déclarer dans le manifest
+- Créer un layout contenant 2 `EditText`, pour le titre et la description et un bouton pour valider
+- Lorsqu'on valide le formulaire, cela ajoute dans une nouvelle tache dans la liste et ferme l'activity
+- N'oubliez pas de set un Id à votre tache avant de l'ajouter !
+- Lorsqu'on clique sur le bouton "Back", fermer la TaskFormActivity
+
+
+- Faites en sorte que la nouvelle tache s'affiche à notre retour sur l'activité principale.
+
 
 ## Edition d'une tache
+- De la meme maniere que vous avez ajouter le boutton supprimer, ajouter une bouton permettant d'éditer
+- Au lieu de supprimer la tache, ouvrir l'activité `TaskFormActivity` pré-rempli avec les informations de la tache.
+
+- Pour transmettre des infos d'une activité à l'autre, vous pouvez utiliser la méthode `putExtra` depuis une instance d'`Intent`
+- Vous pouvez ensuite récuperer dans le onCreate de l'activité les infos que vous avez passer
+
+
+- Vérifier que la tache éditée s'affiche à notre retour sur l'activité principale.
 
 
 ## Bonus - Pour ceux qui sont rapides !
-- Faire en sorte qu'on puisse partager du texte depuis les autres app vers mon app et ouvrir le formulaire de création d'une tache.
-- OnLongClick sur les taches permettre de partager la tache dans une autre application
+- Faire en sorte qu'on puisse partager du texte depuis les autres app vers mon app et ouvrir le formulaire de création d'une tache, [Documentation][1]
 
-[lien][1]
+- OnLongClick sur les taches permettre de partager la tache dans une autre application, [Documentation][2]
 
-[1]: https://developer.android.com/guide/components/activities/activity-lifecycle#alc
+[1]: https://developer.android.com/training/sharing/receive
+
+[2]: https://developer.android.com/training/sharing/receive
