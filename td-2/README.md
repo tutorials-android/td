@@ -1,13 +1,11 @@
-# TD 2 Android
+# Android: TD 2
 
-L'objectif de ce td est d'implementer un écran affichant une liste de tâches, de permettre de créer des nouvelles tâches et de partager une tâche dans une autre application.
+L'objectif de ce TD est d'implementer un écran affichant une liste de tâches, de permettre de créer des nouvelles tâches, de les supprimer et de les partager dans une autre application.
 
 
 ## Ajout des fragments
-#### Documentation
-Cycle de vie d'une activité : https://developer.android.com/guide/components/activities/activity-lifecycle#alc
-
-Fragment : https://developer.android.com/reference/androidx/fragment/app/Fragment.html
+- Cycle de vie d'une `Activity` ([Documentation][1])
+- Cycle de vie d'un `Fragment` ([Documentation][2])
 
 #### HeaderFragment
 - Créer une classe `HeaderFragment` qui hérite de Fragment
@@ -21,7 +19,7 @@ De la même façon, ajouter en dessous du Header un nouveau fragment `TasksFragm
 Pour commencer la liste des tâches sera simplement un tableau de string
 
 ```kotlin
-private val tasks = arrayOf("Task 1", "Task 2", "Task 3")
+private val tasks = listOf("Task 1", "Task 2", "Task 3")
 ```
 
 - Dans le layout du `TasksFragment`, ajouter la balise `<RecyclerView...>`:
@@ -36,19 +34,20 @@ private val tasks = arrayOf("Task 1", "Task 2", "Task 3")
 
 - Dans `TasksFragment`, lors de l'appel de la fonction `onCreateView`, il faut initializer la `recyclerView` avec un `LinearLayoutManager` et un `adapter`
 
-*Rappel*: l'Adapteur manipule les cellules (`ViewHolder`) pour relier la liste de tâches (`Model`) à la `RecyclerView` (`View`) donc correspond plus ou moins au controller de l'architecture MVC (les ViewHolders peuvent être considérées comme des sortes de mini-`Activity`)
+**Rappel**: l'Adapteur recycle les cellules (`ViewHolder`) pour afficher la liste de tâches (`Model`) dans la `RecyclerView` (`View`) donc correspond plus ou moins au `Controller` de l'architecture MVC
 
 - Créer une nouvelle classe `TasksAdapter`
 
 ```kotlin
-class TasksAdapter(private val tasks: List<String>) 
-	: RecyclerView.Adapter<TaskViewHolder>()
+class TasksAdapter(private val tasks: List<String>) : RecyclerView.Adapter<TaskViewHolder>() {}
 ```
 
 - Créer également la classe `TaskViewHolder` (il s'agit de la vue dans le design pattern MVC)
 
 ```kotlin
-class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+	fun bind(task: String) {}
+}
 ```
 
 - Créer également un nouveau layout `item_task.xml`
@@ -72,10 +71,10 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
 Dans le `TasksAdapter` :
 - implementer la methode `getItemCount` qui renvoie la taille de la liste de tâche à afficher
-- implementer la methode `onCreateViewHolder` de façon à ce qu'elle renvoie un nouveau `TaskViewHolder` qui contient le layout `task_view_holder`
+- implementer la methode `onCreateViewHolder` de façon à ce qu'elle crée un nouveau `TaskViewHolder` en utilisant le layout `item_task.xml`
 - Pour finir implémenter la méthode `onBindViewHolder` qui va relier la cellule (`ViewHolder`) à la donnée (ici le titre de la tâche) en fonction de la position dans la liste.
 
-*Astuce*: Utilisez l'IDE pour faciliter l'implémentation des méthodes en cliquant sur le nom de votre classe (qui doit être soulignée en rouge) et cliquez sur l'ampoule jaune ou tapez `Alt` + `ENTER` (sinon, `CTRL` + `O` n'importe où dans la classe)
+**Astuce**: Utilisez l'IDE pour faciliter l'implémentation des méthodes en cliquant sur le nom de votre classe (qui doit être soulignée en rouge) et cliquez sur l'ampoule jaune ou tapez `Alt` + `ENTER` (sinon, `CTRL` + `O` n'importe où dans la classe)
 
 Votre code doit compiler maintenant et vous devez voir 3 tâches sur fond bleu.
 
@@ -104,17 +103,26 @@ Dans le layout de votre ViewHolder, ajouter un bouton afin de pouvoir supprimer 
 - Transformer votre liste de taches `tasks` en `MutableList` afin de pouvoir la modifier 
 - Dans l'adapteur, ajouter une lambda `onDeleteClickListener` qui prends en arguments une tache et ne renvoie rien
 - Relier cette callback au `onClickListener` de l'image que vous avez ajoutée précédemment
-- Dans le fragment, implementer le `onDeleteClickListener`, il doit supprimer la tache passée en argument de la liste *et notifier l'adapteur*.
+- Dans le fragment, implementer le `onDeleteClickListener`, il doit supprimer la tache passée en argument de la liste **et notifier l'adapteur**.
 
-🤔 Que se passe-t-il si vous tournez votre téléphone ? 🤔
+### Changements de configuration
+Que se passe-t-il si vous tournez votre téléphone ? 🤔
+
+Pour régler ce problème, implémentez les méthodes suivantes:
+
+```kotlin
+override fun onSaveInstanceState(outState: Bundle)
+override fun onActivityCreated(savedInstanceState: Bundle?)
+```
 
 ## Création d'une nouvelle tache
 
 #### ⚠️ Ne faites pas ça chez vous ! ⚠️
 
-Afin de pouvoir créer et éditer les taches nous allons créer un `object`, un object est un élément ne contenant que des fonctions/attributs statiques. C'est une trés **mauvaise pratique** va nous permettre de mettre en place rapidement un faux `ViewModel`
+Afin de pouvoir créer et éditer les taches nous allons créer un `object`, un object est un élément ne contenant que des fonctions /attributs statiques. 
+C'est une trés **mauvaise pratique** mais elle va nous permettre de mettre en place rapidement un faux `ViewModel`
 
-Dans le prochain cours, nous verrons les `ViewModelProviders` et les `LiveData` qui permettent à plusieurs élément d'écouter et d'être notifiés de tous les changements sur un objet (comme une liste de tâche par exemple)
+Dans les prochains TDs, nous verrons comment implémenter cela proprement.
 
 #### TaskViewModel
 
@@ -134,7 +142,7 @@ Dans le prochain cours, nous verrons les `ViewModelProviders` et les `LiveData` 
 - Créer un layout contenant 2 `EditText`, pour le titre et la description et un bouton pour valider
 - Lorsqu'on valide le formulaire, cela ajoute dans une nouvelle tache dans la liste et ferme l'activity
 - N'oubliez pas de donner un `id` à votre tache avant de l'ajouter !
-- Lorsqu'on clique sur le bouton "Back", fermer la TaskFormActivity
+- Lorsqu'on clique sur le bouton "Back", la TaskFormActivity doit se fremer: ajouter une popup de confirmation si l'utilisateur a commencer à taper des informations
 - Faites en sorte que la nouvelle tache s'affiche à notre retour sur l'activité principale.
 
 ## Edition d'une tache
@@ -147,9 +155,13 @@ Dans le prochain cours, nous verrons les `ViewModelProviders` et les `LiveData` 
 
 ## Partager
 
-- Faire en sorte qu'on puisse partager du texte depuis les autres app vers mon app et ouvrir le formulaire de création d'une tache ([Documentation][1])
-- OnLongClick sur les taches permettre de partager la tache dans une autre application ([Documentation][2])
+- Ajouter la possibilité de partager du texte **depuis** les autres applications et ouvrir le formulaire de création de tâche pré-rempli ([Documentation][3])
+- Ajouter la possibilité de partager du texte **vers** les autres applications avec un `OnLongClickListener` sur les tâches ([Documentation][4])
 
-[1]: https://developer.android.com/training/sharing/receive
+[1]: https://developer.android.com/guide/components/activities/activity-lifecycle#alc
 
-[2]: https://developer.android.com/training/sharing/send
+[2]: https://developer.android.com/reference/androidx/fragment/app/Fragment.html
+
+[3]: https://developer.android.com/training/sharing/receive
+
+[4]: https://developer.android.com/training/sharing/send
