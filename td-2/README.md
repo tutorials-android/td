@@ -50,7 +50,7 @@ private val tasks = listOf("Task 1", "Task 2", "Task 3")
 class TasksAdapter(private val tasks: List<String>) : RecyclerView.Adapter<TaskViewHolder>() {}
 ```
 
-- Créer également la classe `TaskViewHolder` (il s'agit de la vue dans le design pattern MVC)
+- Créer la classe `TaskViewHolder` (il s'agit de la vue dans le design pattern MVC)
 
 ```kotlin
 class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -79,7 +79,12 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 Dans le `TasksAdapter` :
 - implementer la methode `getItemCount` qui renvoie la taille de la liste de tâche à afficher
-- implementer la methode `onCreateViewHolder` de façon à ce qu'elle crée un nouveau `TaskViewHolder` en utilisant le layout `item_task.xml`
+- implementer la methode `onCreateViewHolder` de façon à ce qu'elle crée un nouveau `TaskViewHolder` en utilisant le layout `item_task.xml`: 
+
+```kotlin
+  return TaskViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false))
+```
+
 - Pour finir implémenter la méthode `onBindViewHolder` qui va relier la cellule (`ViewHolder`) à la donnée (ici le titre de la tâche) en fonction de la position dans la liste.
 
 **Astuce**: Utilisez l'IDE pour faciliter l'implémentation des méthodes en cliquant sur le nom de votre classe (qui doit être soulignée en rouge) et cliquez sur l'ampoule jaune ou tapez `Alt` + `ENTER` (sinon, `CTRL` + `O` n'importe où dans la classe)
