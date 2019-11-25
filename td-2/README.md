@@ -128,11 +128,14 @@ Pour régler ce problème, implémentez les méthodes suivantes:
 override fun onSaveInstanceState(outState: Bundle)
 override fun onActivityCreated(savedInstanceState: Bundle?)
 ```
-Il faut également ajouter l'annotation `@Serializable` à la classe `Task`, en ayant d'abord ajouté la dépendance suivante:
+
+Il faut également ajouter l'annotation `@Parcelize` à la classe `Task` afin qu'elle implémente`Parceleable` automatiquement 
+
+Pour cela il faut d'abord ajouter la dépendance suivante:
 
 ```
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
-```
+``
 
 ## Création d'une nouvelle tache
 
