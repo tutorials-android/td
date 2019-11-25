@@ -121,11 +121,17 @@ Dans le layout de votre ViewHolder, ajouter un bouton afin de pouvoir supprimer 
 ### Changements de configuration
 Que se passe-t-il si vous tournez votre téléphone ? 🤔
 
+#### Étape Bonus
 Pour régler ce problème, implémentez les méthodes suivantes:
 
 ```kotlin
 override fun onSaveInstanceState(outState: Bundle)
 override fun onActivityCreated(savedInstanceState: Bundle?)
+```
+Il faut également ajouter l'annotation `@Serializable` à la classe `Task`, en ayant d'abord ajouté la dépendance suivante:
+
+```
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
 ```
 
 ## Création d'une nouvelle tache
