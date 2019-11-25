@@ -15,6 +15,12 @@ L'objectif de ce TD est d'implementer un écran affichant une liste de tâches, 
 #### TasksFragment
 De la même façon, ajouter en dessous du Header un nouveau fragment `TasksFragment` qui va nous permettre d'afficher la liste des tâches.
 
+#### Dependances RecyclerView
+Dans le `build.gradle`, ajouter :
+```kotlin
+implementation "androidx.recyclerview:recyclerview:1.1.0
+```
+
 #### La liste des taches
 Pour commencer la liste des tâches sera simplement un tableau de string
 
