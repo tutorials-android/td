@@ -10,6 +10,7 @@ L'objectif de ce TD est d'implementer un écran affichant une liste de tâches, 
 #### HeaderFragment
 - Créer une classe `HeaderFragment` qui hérite de Fragment
 - Créer le layout associé `header_fragment.xml` et ajouter une `<TextView...>` vide qui permettra d'afficher plus tard le nom de l'utilisateur
+- Dans `HeaderFragment`, implémenter `OnCreateView` pour `inflate` ce layout
 - Grace à la balise `<fragment...>`, ajouter à votre activité principale le `HeaderFragment` et afficher "Hello World" dans la TextView
 - Vous pouvez utiliser l'attribut `android:name` pour specifier la classe de votre Fragment
 
