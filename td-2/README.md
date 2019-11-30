@@ -135,7 +135,7 @@ Pour cela il faut d'abord ajouter la dépendance suivante:
 
 ```
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
-``
+```
 
 ## Création d'une nouvelle tache
 
@@ -175,7 +175,7 @@ Dans les prochains TDs, nous verrons comment implémenter cela proprement.
 - Vous pouvez ensuite récuperer dans le onCreate de l'activité les infos que vous avez passées
 - Vérifier que les infos éditées s'affichent bien à notre retour sur l'activité principale.
 
-## Partager
+## Bonus: Partager
 
 - Ajouter la possibilité de partager du texte **depuis** les autres applications et ouvrir le formulaire de création de tâche pré-rempli ([Documentation][3])
 - Ajouter la possibilité de partager du texte **vers** les autres applications avec un `OnLongClickListener` sur les tâches ([Documentation][4])
