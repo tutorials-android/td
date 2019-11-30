@@ -20,8 +20,8 @@ De la même façon, ajouter en dessous du Header un nouveau fragment `TasksFragm
 #### Dependances RecyclerView
 Dans le `build.gradle`, ajouter :
 
-```groovy
-	implementation "androidx.recyclerview:recyclerview:1.1.0
+```
+implementation "androidx.recyclerview:recyclerview:1.1.0
 ```
 
 #### La liste des taches
@@ -134,8 +134,8 @@ Il faut également ajouter l'annotation `@Parcelize` à la classe `Task` afin qu
 
 Pour cela il faut d'abord ajouter la dépendance suivante:
 
-```groovy
-	implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
+```
+implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
 ```
 
 ## Création d'une nouvelle tache
