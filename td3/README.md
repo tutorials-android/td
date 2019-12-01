@@ -143,13 +143,13 @@ GlobalScope.launch {
 
 
 
-## Tasks
+## TasksFragment
 
 Il est temps de récuperer les tâches depuis le serveur !
 
 - Nous allons utiliser la même instance de retrofit pour créer un nouveau service `TaskService` et déclarez le dans l'objet `Api`
 
-```
+```kotlin
 interface TasksService {
     @GET("tasks")
     suspend fun getTasks(): Response<List<Task>>
@@ -159,41 +159,106 @@ interface TasksService {
 N'oubliez pas de modifier la data class `Task`.
 
 
-### Repository
+### TasksRepository
+Le Repository est une classe qui va pourvoir aller chercher des data dans plusieurs sources de données (exemple : dans une base de donnée locale, et via une API)
+
+
+Créer la classe `TasksRepository`, elle contient 2 fonctions, une fonction `getTasks` qui renvoie des LiveData (auquel va s'abonner le fragment) et une fonction `loadTasks` qui va s'excuter en Asynchrone et va récuperer la liste des taches.
 
 ```kotlin
 class TasksRepository {
-    private val todoService = TaskApi.tasksService
+    private val tasksService = TaskApi.tasksService
 
-    private suspend fun getOpenTasks(): List<Task>? {
-        val tasksResponse = todoService.getTasks()
+    fun getTasks(): LiveData<List<Task>?> {
+        val tasks =  MutableLiveData<List<Task>?>()
+        GlobalScope.launch {
+            tasks.postValue(loadTasks())
+        }
+        return tasks
+    }
+
+    private suspend fun loadTasks(): List<Task>? {
+        val tasksResponse = tasksService.getTasks()
+        Log.e("loadTasks", tasksResponse.toString())
         return if (tasksResponse.isSuccessful) tasksResponse.body() else null
     }
 }
 ```
 
-### LiveData
+
+### S'abonner au LiveData
+
+Dans le TasksFragment, ajouter une instance de TasksRepository et modifier l'adapteur pour qu'ils prennent en parametre une liste locale au fragment et non plus la liste static du ViewModel. Modifier également la fonction deleteTask pour que votre code compile.
 
 
 ```kotlin
+private val tasksRepository = TasksRepository()
 
-class TaskListViewModel : ViewModel() {
-  private val tasksList = mutableListOf<Task>()
-  private var _isRefreshing = MutableLiveData<Boolean>(false)
-  val isRefreshing: LiveData<Boolean>
-    get() = _isRefreshing
-  private val todoRepository = TasksRepository()
-  
-  fun refreshTasks() {
-        viewModelScope.launch {
-            _isRefreshing.postValue(true)
-            todoRepository.getTasks(reverseOrder, showCompleted)?.let { tasks ->
-                tasksList.clear()
-                tasksList.addAll(tasks)
-                recyclerAdapter.notifyDataSetChanged()
-            }
-            _isRefreshing.postValue(false)
-        }
+private val tasks = mutableListOf<Task>()
+private val tasksAdapter= TasksAdapter(tasks,....)
+```
+
+
+Enfin ajouter la méthode `fetchTasks`, cette méthode
+- Récupere les tâches depuis le serveur
+- Ajoute un observer sur la LiveData
+- Quand la liveData notifie qu'il y a du changement, on reset la liste des taches `tasks` et notifie l'adapteur que la liste a changé
+
+
+```kotlin
+private fun fetchTasks() {
+  tasksRepository.getTasks().observe(this, Observer {
+    if (it != null) {
+      tasks.clear()
+      tasks.addAll(it)
+      tasksAdapter.notifyDataSetChanged()
     }
+  })
 }
 ```
+
+Vous pouvez appeler cette fonction dans le `OnResume`
+
+### Bonus - TasksViewModel
+**Ne le faites pas si vous ne le sentez pas ! N'est pas nécessaire à la suite du projet**
+
+Mettre toute la logique dans le fragment est une trés mauvaise pratique !
+Les `ViewModel` sont des classes permettant d'enlever un bout de complexité du fragment
+
+Créer une classe `TasksViewModel` qui hérite de `ViewModel`
+C'est elle qui contiendra la liste des taches, l'adapteur et le Repository.
+
+Vous pourrez la récuprer dans le fragment grace au `ViewModelProviders`
+
+```kotlin
+class TasksViewModel: ViewModel() {
+  private val repository
+  private val tasks
+
+  val tasksAdapter
+
+  fun loadTasks(lifecycleOwner: LifecycleOwner) { ... }
+}
+
+
+class TasksFragment: Fragment() {
+  private val tasksViewModel by lazy {
+    ViewModelProviders.of(this).get(TasksViewModel::class.java)
+  }
+
+  OnCreateView(...) {
+    // ...
+    view.tasks_recycler_view.adapter = tasksViewModel.tasksAdapter
+  }
+
+  onResume(...) {
+    // ...
+    tasksViewModel.loadTasks(this)
+  }
+}
+
+```
+
+
+
+## Suppresion d'un tache
