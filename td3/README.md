@@ -29,11 +29,12 @@ Afin de communiquer avec le réseau internet (wifi ou 3g), il faut ajouter la pe
 Dans le fichier `app/build.gradle`, ajouter : 
 
 ```groovy
-implementation "com.squareup.retrofit2:retrofit:2.6.2"
-implementation 'com.squareup.retrofit2:converter-moshi:2.6.2'
-implementation "com.squareup.moshi:moshi:1.8.0"
-implementation "com.squareup.moshi:moshi-kotlin:1.8.0"
-implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2"
+  implementation "com.squareup.retrofit2:retrofit:2.6.2"
+  implementation 'com.squareup.retrofit2:converter-moshi:2.6.2'
+  implementation "com.squareup.moshi:moshi:1.8.0"
+  implementation "com.squareup.moshi:moshi-kotlin:1.8.0"
+  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2"
 ```
 
 
@@ -261,4 +262,25 @@ class TasksFragment: Fragment() {
 
 
 
+## TasksService
+Modifier le TasksService et ajoutez y les routes suivantes.
+
+```
+  @DELETE("tasks/{id}")
+  suspend fun deleteTask(@Path("id") id: String): Response<String>
+
+  @POST("tasks")
+  suspend fun createTask(@Body task: Task): Response<Task>
+
+  @PATCH("tasks/{id}")
+  suspend fun updateTask(@Path("id") id: String, @Body task: Task): Response<Task>
+```
+
 ## Suppresion d'un tache
+- Modifier l'action lorsqu'on clique sur le bouton "supprimer d'une tache" et effectuer un call réseaux afin de la supprimer dans le serveur puis supprimer la dans la liste locale (la variable `tasks`)
+
+** Vous pouvez créer des tâches dans l'interface, en spécifiant votre token dans le Authorize **
+
+## Ajout/Édition d'une tâche
+- Avant de fermer l'Activity qui permet de créer/editer des tâches, effectuer un call reseaux et vérifier qu'il n y a pas d'erreurs avant de la fermer et de réafficher l'écran des taches
+
