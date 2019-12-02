@@ -240,14 +240,15 @@ tasksRepository.getTasks().observe(this, Observer {
 Modifier `TasksService` et ajoutez y les routes suivantes:
 
 ```kotlin
+@GET("tasks")
+suspend fun getTasks(): Response<List<Task>>
+
 @DELETE("tasks/{id}")
 suspend fun deleteTask(@Path("id") id: String): Response<String>
 
-@FormUrlEncoded
 @POST("tasks")
 suspend fun createTask(@Body task: Task): Response<Task>
 
-@FormUrlEncoded
 @PATCH("tasks/{id}")
 suspend fun updateTask(@Body task: Task): Response<Task>
 ```
@@ -264,7 +265,7 @@ suspend fun updateTask(@Body task: Task): Response<Task>
 
 Mettre toute la logique dans le fragment est une trés mauvaise pratique: les `ViewModel` permettent d'extraire une partie logique du fragment.
 
-Créer une classe `TasksViewModel` qui hérite de `ViewModel`: elle contiendra la liste des taches, l'adapteur et le Repository.
+Créer une classe `TasksViewModel` qui hérite de `ViewModel`: elle contiendra la liste des taches, l'adapteur et le Repository, ainsi que les coroutines, supprimer la fonction `getTasks` du `TasksRepository`
 
 Vous pourrez la récupérer dans le fragment grâce au `ViewModelProviders`:
 
@@ -289,6 +290,21 @@ class TasksFragment: Fragment() {
   override fun onResume(...) {
     // ...
     tasksViewModel.loadTasks()
+  }
+}
+
+class TasksRepository {
+  private val tasksService = TaskApi.tasksService
+  
+  suspend fun deleteTask(id: String): Boolean {
+    val tasksResponse = tasksService.deleteTask(id)
+    return tasksResponse.isSuccessful
+  }
+  
+  suspend fun loadTasks(): List<Task>? {
+    val tasksResponse = tasksService.getTasks()
+  
+    return if (tasksResponse.isSuccessful) tasksResponse.body() else null
   }
 }
 ```
