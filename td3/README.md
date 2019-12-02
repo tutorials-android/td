@@ -106,7 +106,7 @@ object Api {
 
 ```kotlin
 interface UserService {
-    @GET("info")
+    @GET("users/info")
     suspend fun getInfo(): Response<UserInfo>
 }
 ```
