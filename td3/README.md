@@ -240,14 +240,16 @@ tasksRepository.getTasks().observe(this, Observer {
 Modifier `TasksService` et ajoutez y les routes suivantes:
 
 ```kotlin
-  @DELETE("tasks/{id}")
-  suspend fun deleteTask(@Path("id") id: String): Response<String>
+@DELETE("tasks/{id}")
+suspend fun deleteTask(@Path("id") id: String): Response<String>
 
-  @POST("tasks")
-  suspend fun createTask(@Body task: Task): Response<Task>
+@FormUrlEncoded
+@POST("tasks")
+suspend fun createTask(@Body task: Task): Response<Task>
 
-  @PATCH("tasks/{id}")
-  suspend fun updateTask(@Path("id") id: String, @Body task: Task): Response<Task>
+@FormUrlEncoded
+@PATCH("tasks/{id}")
+suspend fun updateTask(@Body task: Task): Response<Task>
 ```
 
 ## Suppression, Ajout et Édition d'une tâche
