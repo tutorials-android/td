@@ -137,11 +137,11 @@ Créer la `data class` `UserInfo` avec des annotations Moshi pour récupérer ce
 
 ```kotlin
 data class UserInfo(
-    @Json(name = "email")
+    @field:Json(name = "email")
     val email: String,
-    @Json(name = "firstname")
+    @field:Json(name = "firstname")
     val firstName: String,
-    @Json(name = "lastname")
+    @field:Json(name = "lastname")
     val lastName: String
 )
 ```
@@ -151,7 +151,7 @@ data class UserInfo(
 - Overrider la méthode `onResume` pour y récuperer les infos de l'utilisateur et l'afficher dans le header:
 
 ```kotlin
-TaskApi.userService.getInfo()
+Api.userService.getInfo()
 ```
 
 La méthode getInfo étant déclarée comme `suspend`, vous aurez besoin de la lancer dans une dans un `couroutineScope`
@@ -286,7 +286,7 @@ class TasksFragment: Fragment() {
 
   override fun onResume(...) {
     // ...
-    tasksViewModel.loadTasks(this)
+    tasksViewModel.loadTasks()
   }
 }
 ```
