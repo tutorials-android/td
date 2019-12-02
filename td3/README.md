@@ -159,8 +159,10 @@ Pour cela on peut utiliser `GlobalScope`, mais une meilleure façon est d'en cr�
 
 ```kotlin
 private val coroutineScope = MainScope()
-// ...
+// Pour utiliser:
 coroutineScope.launch {...}
+// Dans onDestroy():
+coroutineScope.cancel()
 ```
 
 **NB:** Une vraiment bonne façon est d'utiliser les scopes fournis par android, notamment: `viewModelScope`, mais pour l'instant on implémente tout dans le fragment comme des 🐷
@@ -269,7 +271,7 @@ class TasksViewModel: ViewModel() {
   private val repository
   private val tasks
   val tasksAdapter
-  fun loadTasks(lifecycleOwner: LifecycleOwner) { ... }
+  fun loadTasks() { ... }
 }
 
 class TasksFragment: Fragment() {
