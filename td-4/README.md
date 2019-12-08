@@ -1,0 +1,191 @@
+# TD 4: Téléchargment d'images et permissions !
+
+L'objectif de cette partie va être de permettre à l'utilisateur d'uploader un avatar et de l'afficher.
+
+## Afficher une image télécharger depuis un serveur distant: Glide
+
+
+### Ajout des dépendances
+
+Dans le fichier `app/build.gradle`, ajouter :
+
+```groovy
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+```
+
+
+### Dans le headerFragment
+
+- Ajouter une imageView à coté du npm qui va permettre d'afficher l'avatar de l'utilisateur.
+- Ajouter dans le onResume :
+
+```kotlin
+Glide.with(this).load("http://goo.gl/gEgYUd").into(image_view)
+```
+
+- A partir de la documentation d'Android et de Glide: https://github.com/bumptech/glide, afficher l'image sous forme de cercle
+- Attention l'image peut être rectangulaire, tester avec plusieurs formats image pour vérifier que votre code fonctionne correctement
+
+## Upload d'images
+
+### Nouvelle activité
+- Créer une nouvelle activité `UserInfoActivity`
+- Ajouter 2 boutons "Prendre une photo" et "Choisir une image"
+
+```xml
+    <Button
+        android:id="@+id/upload_image_button"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choisir une Image" />
+
+    <Button
+        android:id="@+id/take_picture_button"
+        app:layout_constraintTop_toBottomOf="@+id/upload_image_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Prendre une photo" />
+```
+
+- Attention si ca ne compile pas, vérifier que vous avez bien déclarer votre activity dans le Manifest
+
+### Prendre une photo
+
+#### Les permissions
+- `AndroidManifest`: ajouter la permissions `android.permission.CAMERA`
+- `UserInfoActivity` : sur le `take_picture_button`, ajouter un onClickListener qui appele la méthode `askCameraPermissionAndOpenCamera`
+
+
+```kotlin
+private fun askCameraPermissionAndOpenCamera() {
+  if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+      // Show an explanation to the user *asynchronously* -- don't block
+      // this thread waiting for the user's response! After the user
+      // sees the explanation, try again to request the permission.
+      ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE )
+    } else {
+      // No explanation needed, we can request the permission.
+      ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE )
+      // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+      // app-defined int constant. The callback method gets the
+      // result of the request.
+    }
+  } else {
+    openCamera()
+  }
+}
+
+private fun openCamera() {
+
+}
+```
+
+- Prenez le temps de lire et comprendre cette fonction
+
+- Déclarer la constante `CAMERA_PERMISSION_CODE`
+
+```kotlin
+companion object {
+  const val CAMERA_PERMISSION_CODE = 1000
+}
+```
+
+`CAMERA_PERMISSION_CODE` est un code passé à la popup de permission qui sera repassé à la fonction `onRequestPermissionsResult` aprés la décision de l'utilisateur
+
+
+- Implémenter la méthode `onRequestPermissionsResult`, si l'utilisateur à donner accès à la camera `PackageManager.PERMISSION_GRANTED`, ouvrez la camera sinon vous pouvez afficher un Toast `Toast.makeText(this, "We need access to your camera to take picture :'(", Toast.LENGTH_LONG)`
+
+
+#### Ouvrir la camera
+- Il est possible d'ouvrir des `Intent` et de récuperer des informations grace à la fonction `startActivityForResult` qui est jumelé à la fonction `onActivityResult`
+
+
+
+```kotlin
+private fun openCamera() {
+  startActivityForResult(Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), CAMERA_REQUEST_CODE)
+}
+```
+
+- Déclarer la constante `CAMERA_PERMISSION_CODE`
+```
+const val CAMERA_PERMISSION_CODE = 2001
+```
+
+Cette constante sera passé à la fonction `onActivityResult` une fois que l'utilisateur aura pris une photo.
+
+- Implémenter la fonction `onActivityResult` qui appelera la fonction `handlePhotoTaken(data: Intent?)`
+
+
+```kotlin
+private fun handlePhotoTaken(data: Intent?) {
+  val image = data?.extras?.get("data") as? Bitmap
+  val imageBody = imageToBody(image)
+
+  // Afficher l'image
+
+  // Plus tard : Envoie de l'avatar au serveur
+}
+
+// Vous pouvez ignorer cette fonction...
+private fun imageToBody(image: Bitmap?): MultipartBody.Part? {
+  val f = File(cacheDir, "tmpfile.jpg")
+  f.createNewFile()
+  try {
+      val fos = FileOutputStream(f)
+      image?.compress(Bitmap.CompressFormat.PNG, 100, fos)
+
+      fos.flush()
+      fos.close()
+  } catch (e: FileNotFoundException) {
+      e.printStackTrace()
+  } catch (e: IOException) {
+      e.printStackTrace()
+
+  }
+
+  val body = RequestBody.create(MediaType.parse("image/png"), f)
+  return MultipartBody.Part.createFormData("avatar", f.path ,body)
+}
+```
+
+- Ajouter une imageView dans la `UserInfoActivity`
+- Dans la fonction `handlePhotoTaken`, afficher la photo à l'aide de Glide
+
+#### Envoyer la photo au serveur
+- Dans l'interface `UserService`, ajouter une nouvelle fonction
+
+```kotlin
+@Multipart
+@PATCH("users/update_avatar")
+suspend fun updateAvatar(@Part avatar: MultipartBody.Part): Response<UserInfo>
+```
+
+- Dans l'activity, appelez cette fonction pour mettre à jour le serveur avec le nouvel avatar.
+
+- Modifier la `data class UserInfo` pour ajouter un champ `avatar` renvoyé depuis le serveur
+
+- Enfin au chargement de l'activité, afficher l'avatar renvoyé depuis le serveur
+
+
+### Rebelotte : Accès au Storage !
+- Permettez à l'utilisateur d'uplaoder une image qu'il avait déjà sur son téléphone
+- Ajouter dans le manifest la permission `android.permission.READ_EXTERNAL_STORAGE`
+
+
+
+## Bonus - édition champs utilisateurs
+- Dans L'activité `UserInfoActivity`, afficher les informations nom/prénom/email
+- Ajouter une boite de dialog permettant l'édition des champs (Envoyer les infos au serveur)
+
+Documentation Dialog : https://developer.android.com/guide/topics/ui/dialogs
+
+### Route pour udpate les infos du user
+```kotlin
+@PATCH("users")
+suspend fun updateAvatar(@Body user: UserInfo): Response<UserInfo>
+```
+
