@@ -1,8 +1,8 @@
-# TD 4: Téléchargment d'images et permissions !
+# TD 4: Téléchargement d'images et permissions !
 
 L'objectif de cette partie va être de permettre à l'utilisateur d'uploader un avatar et de l'afficher.
 
-## Afficher une image télécharger depuis un serveur distant: Glide
+## Afficher une image téléchargée depuis un serveur distant: Glide
 
 
 ### Ajout des dépendances
@@ -24,7 +24,7 @@ Dans le fichier `app/build.gradle`, ajouter :
 Glide.with(this).load("http://goo.gl/gEgYUd").into(image_view)
 ```
 
-- A partir de la documentation d'Android et de Glide: [https://github.com/bumptech/glide](), afficher l'image sous forme de cercle
+- À partir de la documentation d'Android et de Glide: [https://github.com/bumptech/glide](), afficher l'image sous la forme d'un cercle
 - Attention l'image peut être rectangulaire, tester avec plusieurs formats image pour vérifier que votre code fonctionne correctement
 
 ## Upload d'images
@@ -49,7 +49,7 @@ Glide.with(this).load("http://goo.gl/gEgYUd").into(image_view)
         android:text="Prendre une photo" />
 ```
 
-- Attention si ca ne compile pas, vérifiez que vous avez bien déclaré votre Activity dans le Manifest
+- Attention si ça ne compile pas, vérifiez que vous avez bien déclaré votre Activity dans le Manifest
 
 ### Prendre une photo
 
