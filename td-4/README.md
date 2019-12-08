@@ -17,14 +17,14 @@ Dans le fichier `app/build.gradle`, ajouter :
 
 ### Dans le headerFragment
 
-- Ajouter une imageView à coté du npm qui va permettre d'afficher l'avatar de l'utilisateur.
+- Ajouter une imageView à coté du nom qui va permettre d'afficher l'avatar de l'utilisateur.
 - Ajouter dans le onResume :
 
 ```kotlin
 Glide.with(this).load("http://goo.gl/gEgYUd").into(image_view)
 ```
 
-- A partir de la documentation d'Android et de Glide: https://github.com/bumptech/glide, afficher l'image sous forme de cercle
+- A partir de la documentation d'Android et de Glide: [https://github.com/bumptech/glide](), afficher l'image sous forme de cercle
 - Attention l'image peut être rectangulaire, tester avec plusieurs formats image pour vérifier que votre code fonctionne correctement
 
 ## Upload d'images
@@ -49,7 +49,7 @@ Glide.with(this).load("http://goo.gl/gEgYUd").into(image_view)
         android:text="Prendre une photo" />
 ```
 
-- Attention si ca ne compile pas, vérifier que vous avez bien déclarer votre activity dans le Manifest
+- Attention si ca ne compile pas, vérifiez que vous avez bien déclaré votre Activity dans le Manifest
 
 ### Prendre une photo
 
@@ -84,8 +84,7 @@ private fun openCamera() {
 ```
 
 - Prenez le temps de lire et comprendre cette fonction
-
-- Déclarer la constante `CAMERA_PERMISSION_CODE`
+- Déclarer la constante `CAMERA_PERMISSION_CODE`:
 
 ```kotlin
 companion object {
@@ -96,28 +95,34 @@ companion object {
 `CAMERA_PERMISSION_CODE` est un code passé à la popup de permission qui sera repassé à la fonction `onRequestPermissionsResult` aprés la décision de l'utilisateur
 
 
-- Implémenter la méthode `onRequestPermissionsResult`, si l'utilisateur à donner accès à la camera `PackageManager.PERMISSION_GRANTED`, ouvrez la camera sinon vous pouvez afficher un Toast `Toast.makeText(this, "We need access to your camera to take picture :'(", Toast.LENGTH_LONG)`
+- Implémenter la méthode `onRequestPermissionsResult`, si l'utilisateur à donné accès à la camera `PackageManager.PERMISSION_GRANTED`, ouvrez la camera sinon vous pouvez afficher un Toast 
+
+```kotlin
+Toast.makeText(this, "We need access to your camera to take a picture :'(", Toast.LENGTH_LONG)
+```
 
 
 #### Ouvrir la camera
-- Il est possible d'ouvrir des `Intent` et de récuperer des informations grace à la fonction `startActivityForResult` qui est jumelé à la fonction `onActivityResult`
+- Il est possible d'ouvrir des `Intent` et de récuperer des informations grâce à la fonction `startActivityForResult` qui est jumelée à la fonction `onActivityResult`
 
 
 
 ```kotlin
 private fun openCamera() {
-  startActivityForResult(Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE), CAMERA_REQUEST_CODE)
+  val cameraIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+  startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
 }
 ```
 
 - Déclarer la constante `CAMERA_PERMISSION_CODE`
-```
+
+```kotlin
 const val CAMERA_PERMISSION_CODE = 2001
 ```
 
-Cette constante sera passé à la fonction `onActivityResult` une fois que l'utilisateur aura pris une photo.
+Cette constante sera passée à la fonction `onActivityResult` une fois que l'utilisateur aura pris une photo.
 
-- Implémenter la fonction `onActivityResult` qui appelera la fonction `handlePhotoTaken(data: Intent?)`
+- Implémenter la fonction `onActivityResult` qui appelera la fonction `handlePhotoTaken(data: Intent?)`:
 
 
 ```kotlin
@@ -165,9 +170,7 @@ suspend fun updateAvatar(@Part avatar: MultipartBody.Part): Response<UserInfo>
 ```
 
 - Dans l'activity, appelez cette fonction pour mettre à jour le serveur avec le nouvel avatar.
-
 - Modifier la `data class UserInfo` pour ajouter un champ `avatar` renvoyé depuis le serveur
-
 - Enfin au chargement de l'activité, afficher l'avatar renvoyé depuis le serveur
 
 
@@ -177,15 +180,15 @@ suspend fun updateAvatar(@Part avatar: MultipartBody.Part): Response<UserInfo>
 
 
 
-## Bonus - édition champs utilisateurs
+## Bonus - Édition champs utilisateurs
 - Dans L'activité `UserInfoActivity`, afficher les informations nom/prénom/email
 - Ajouter une boite de dialog permettant l'édition des champs (Envoyer les infos au serveur)
 
-Documentation Dialog : https://developer.android.com/guide/topics/ui/dialogs
+Documentation Dialog : [https://developer.android.com/guide/topics/ui/dialogs]()
 
 ### Route pour udpate les infos du user
+
 ```kotlin
 @PATCH("users")
 suspend fun updateAvatar(@Body user: UserInfo): Response<UserInfo>
 ```
-
