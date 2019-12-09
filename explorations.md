@@ -56,5 +56,3 @@
 - Refaire l'application de façon très basique (seulement les tâches)
 
 
-
-Lien vers github avant le 30 décembre 2019
