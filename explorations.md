@@ -53,8 +53,3 @@
   - performance, consommation de RAM, etc...
   - https://www.sonarqube.org, LeakCanary, Stetho
 
-
-
-
-## (ios, flutter, ReactNative)
-- Refaire l'application de façon très basique (seulement les tâches)
