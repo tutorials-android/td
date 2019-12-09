@@ -1,10 +1,14 @@
-
 ## Room :
   - https://codelabs.developers.google.com/codelabs/android-room-with-a-view-kotlin
   - https://codelabs.developers.google.com/codelabs/kotlin-android-training-repository/index.html?index=..%2F..android-kotlin-fundamentals#3
   - Implémenter un cache avec un room
   - Gestion offline des informations de l'utilisateur
   - Gestion offline des taches
+
+
+## Pagination
+- https://developer.android.com/topic/libraries/architecture/paging
+- Remplacer la RecyclerView par une PagedList
 
 
 ## Espresso (test de votre application):
@@ -54,5 +58,3 @@
 
 ## (ios, flutter, ReactNative)
 - Refaire l'application de façon très basique (seulement les tâches)
-
-
