@@ -70,7 +70,7 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
   <TextView
       android:id="@+id/task_title"
-      android:background="@android/holo_blue_bright"
+      android:background="@android:color/holo_blue_bright"
       android:layout_width="match_parent"
       android:layout_height="wrap_content" />
 </LinearLayout>
