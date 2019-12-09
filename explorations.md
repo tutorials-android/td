@@ -1,6 +1,6 @@
 ## Room :
   - https://codelabs.developers.google.com/codelabs/android-room-with-a-view-kotlin
-  - https://codelabs.developers.google.com/codelabs/kotlin-android-training-repository/index.html?index=..%2F..android-kotlin-fundamentals#3
+  - https://codelabs.developers.google.com/codelabs/kotlin-android-training-repository/index.html
   - Implémenter un cache avec un room
   - Gestion offline des informations de l'utilisateur
   - Gestion offline des taches
@@ -31,8 +31,10 @@
 
 
 ## Notification : 
-  - Toutes les Xh envoyer une notification avec le nombre de taches restantes à faire
-  - Lorsqu'on clique sur la notif ouvre l'écran des taches
+  - Les tâches possèdent désormais un champs `due_date` de format
+  - Dans le formulaire d'ajout/édition, ajouter un `DatePicker` et un `TimePicker` permettant de le modifier
+  - Afficher une notification 5min avant la `due_date`
+  - Ajouter une action `mark_as_done` dans la notification
 
 
 
