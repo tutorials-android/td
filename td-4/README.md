@@ -21,7 +21,7 @@ Dans le fichier `app/build.gradle`, ajouter :
 - Ajouter dans le onResume :
 
 ```kotlin
-Glide.with(this).load("http://goo.gl/gEgYUd").into(image_view)
+Glide.with(this).load("https://goo.gl/gEgYUd").into(image_view)
 ```
 
 - À partir de la documentation d'Android et de Glide: [https://github.com/bumptech/glide](https://github.com/bumptech/glide), afficher l'image sous la forme d'un cercle
