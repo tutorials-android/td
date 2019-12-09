@@ -114,10 +114,10 @@ private fun openCamera() {
 }
 ```
 
-- Déclarer la constante `CAMERA_PERMISSION_CODE`
+- Déclarer la constante `CAMERA_REQUEST_CODE`
 
 ```kotlin
-const val CAMERA_PERMISSION_CODE = 2001
+const val CAMERA_REQUEST_CODE = 2001
 ```
 
 Cette constante sera passée à la fonction `onActivityResult` une fois que l'utilisateur aura pris une photo.
