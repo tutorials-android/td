@@ -24,7 +24,7 @@ Dans le fichier `app/build.gradle`, ajouter :
 Glide.with(this).load("http://goo.gl/gEgYUd").into(image_view)
 ```
 
-- À partir de la documentation d'Android et de Glide: [https://github.com/bumptech/glide](), afficher l'image sous la forme d'un cercle
+- À partir de la documentation d'Android et de Glide: [https://github.com/bumptech/glide](https://github.com/bumptech/glide), afficher l'image sous la forme d'un cercle
 - Attention l'image peut être rectangulaire, tester avec plusieurs formats image pour vérifier que votre code fonctionne correctement
 
 ## Upload d'images
@@ -98,7 +98,7 @@ companion object {
 - Implémenter la méthode `onRequestPermissionsResult`, si l'utilisateur à donné accès à la camera `PackageManager.PERMISSION_GRANTED`, ouvrez la camera sinon vous pouvez afficher un Toast 
 
 ```kotlin
-Toast.makeText(this, "We need access to your camera to take a picture :'(", Toast.LENGTH_LONG)
+Toast.makeText(this, "We need access to your camera to take a picture :'(", Toast.LENGTH_LONG).show()
 ```
 
 
