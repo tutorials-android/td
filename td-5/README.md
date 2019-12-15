@@ -73,11 +73,13 @@ view.findNavController().navigate(R.id.action_onBoardingFragment_to_)
 
 
 ## Refacto de l'API
-Dans l'`API`, nous allons avoir besoin d'un contexte, sauf qu'il s'agit d'un objet et que nous n'avons pas moyen de lui passer un contexte. De plus il faudrai faire de l'injection de dépendance pour pouvoir ajouter le contexte la ou on a besoin ou bien passé un contexte en argument partout..
+Le but est de ne plus utiliser le `TOKEN` stocké en dur mais de le récuperer depuis le téléphone de l'utilisateur ~
+
+Pour cela dans l'`API`, nous allons avoir besoin d'un contexte, sauf qu'il s'agit d'un objet et que nous n'avons pas moyen de lui passer un contexte. De plus il faudrai faire de l'injection de dépendance pour pouvoir ajouter le contexte la ou on a besoin ou bien passé un contexte en argument partout..
 
 Pour vous éviter tout ça, nous avons décidé d'introduit un leak de mémoire volontairement en transformant l'`Api` en singleton initilialisé au lancement de l'application et qui contient le context de l'application
 
-**Ceci est exceptionnel, nous vous le deconseillons fortement dans vos projets**
+**Ceci est exceptionnel, nous vous le deconseillons fortement dans des projets professionels**
 
 - Créer une classe App
 ```kotlin
@@ -125,11 +127,57 @@ class Api(private val context: Context) {
 - Ajouter un nouveau call réseau
 ```kotlin
 @POST("users/login")
-suspend fun login(@Body user: UserLogin): Response<TokenResponse>
+suspend fun login(@Body user: LoginForm): Response<TokenResponse>
 ```
 
 
 ### Soumission du formulaire
+- Ajouter un `clickListener` sur le bouton, qui appele une fonction `submitForm`
+* submitForm
+  - Vérifie que les champs sont remplis
+  - créer une instance de `LoginForm`
+  - Envoie le formulaire au serveur via la fonction `login` de `UserService`
+  - Si le call se passe bien, ajoutez le token renvoyé dans les `SharedPreference` (cf pus bas) et affichez les taches de l'utilisateur
+
+  - Si ça se passe mal, affiché un message à l'utilisateur lui indiquant qu'il y a une erreur
+
+
+### SharedPreference
+Créer un fichier `Constants.kt` qui va contenir les constantes utilisés pas les `SharedPreference`
+```kotlin
+const val SHARED_PREF_FILENAME = "tasks_preferences"
+const val SHARED_PREF_TOKEN_KEY = "auth_token_key"
+```
+
+* Pour stocker le token
+  - on récupere les sharedPref, qu'on ouvre en mode édition
+  - on set une valeur
+  - et on sauvegarde les changements
+
+```kotlin
+val sharedPref = context?.getSharedPreferences("tasks_preferences", Context.MODE_PRIVATE)?.edit()
+sharedPref?.putString("JWT_TOKEN", it)
+sharedPref?.apply()
+```
+
+
+### Modification Api
+- Dans l'api, supprimer la `const TOKEN` et ajouter une fonction (dans la classe) `token` qui récupere celui dans les SharedPreference !
+`sharedPreference.getString()`
+
+
+
+### AuthenticationFragment: Redirection
+Lorsque le user relance son application, il faut lui afficher directement la liste des taches !
+- Ajouter une vérification dans l'`AuthenticationFragment`, si un token existe dans les preferences, redigirer l'utilisateur vers la liste des taches !
 
 
 ## Signup
+- data class `SignUpForm: firstname, lastname, email, password, password_confirmation`
+- Même étape que le login !
+
+
+
+## Bonus : Déconnexion
+- Ajouter un bouton pour se déconnecter
+- Cela doit effacer le token existant dans les sharedPreference
