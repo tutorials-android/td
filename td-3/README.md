@@ -6,20 +6,7 @@ Les APIs qui nous allons utiliser exigent qu'une personne soit connectée, dans 
 
 - Nous allons utiliser ce site: https://android-tasks-api.herokuapp.com/api-docs/index.html
 - Lisez rapidement la documentation de l'API
-- Créez vous un compte directement depuis la documentation et copiez le token généré en utilisant ce JSON (celui qui est donné est incomplet 🤷‍♂️):
-
-```json
-{
-  "user": {
-    "firstname": "string",
-    "lastname": "string",
-    "email": "string",
-    "password": "string",
-    "password_confirmation": "string"
-  }
-}
-```
-(vous pourrez le récuperer à nouveau en vous re-loggant)
+- Créez vous un compte directement depuis la documentation et copiez le token généré.
 
 ## Accèder à l'internet
 
@@ -31,7 +18,7 @@ Afin de communiquer avec le réseau internet (wifi, ethernet ou mobile), il faut
 
 ## Ajout des dépendances
 
-Dans le fichier `app/build.gradle`, ajouter : 
+Dans le fichier `app/build.gradle`, ajouter :
 
 ```groovy
   implementation "com.squareup.retrofit2:retrofit:2.6.2"
@@ -213,7 +200,7 @@ class TasksRepository {
 
 ### S'abonner au LiveData
 
-- Dans `TasksFragment`, ajouter une instance de `TasksRepository` 
+- Dans `TasksFragment`, ajouter une instance de `TasksRepository`
 - Modifier l'adapteur pour qu'il utilise une liste locale au fragment et plus la liste `static` du faux ViewModel
 - Modifier également la fonction deleteTask pour que votre code compile
 
@@ -295,15 +282,15 @@ class TasksFragment: Fragment() {
 
 class TasksRepository {
   private val tasksService = TaskApi.tasksService
-  
+
   suspend fun deleteTask(id: String): Boolean {
     val tasksResponse = tasksService.deleteTask(id)
     return tasksResponse.isSuccessful
   }
-  
+
   suspend fun loadTasks(): List<Task>? {
     val tasksResponse = tasksService.getTasks()
-  
+
     return if (tasksResponse.isSuccessful) tasksResponse.body() else null
   }
 }
