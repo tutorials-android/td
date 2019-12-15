@@ -72,5 +72,64 @@ view.findNavController().navigate(R.id.action_onBoardingFragment_to_)
 ```
 
 
+## Refacto de l'API
+Dans l'`API`, nous allons avoir besoin d'un contexte, sauf qu'il s'agit d'un objet et que nous n'avons pas moyen de lui passer un contexte. De plus il faudrai faire de l'injection de dépendance pour pouvoir ajouter le contexte la ou on a besoin ou bien passé un contexte en argument partout..
+
+Pour vous éviter tout ça, nous avons décidé d'introduit un leak de mémoire volontairement en transformant l'`Api` en singleton initilialisé au lancement de l'application et qui contient le context de l'application
+
+**Ceci est exceptionnel, nous vous le deconseillons fortement dans vos projets**
+
+- Créer une classe App
+```kotlin
+class App: Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Api.INSTANCE = Api(this)
+    }
+}
+
+```
+
+Dans l'AndroidManifest, ajoutez l'attribut name avec votre classe
+```kotlin
+    <application
+        android:name="path.to.App"
+        ....
+        />
+```
+
+- Dans l'`Api`
+```kotlin
+class Api(private val context: Context) {
+    companion object {
+        private const val BASE_URL = "https://android-tasks-api.herokuapp.com/api/"
+        private const val TOKEN = "votre token"
+        lateinit var INSTANCE: Api
+    }
+
+    // le reste ne change pas
+}
+```
+
+
+- Partout ailleurs remplacer Api par Api.INSTANCE
+- votre application doit etre 100% fonctionnel, changer l'activity lancé au lancement de l'application pour vérfier
+
+
 ## Login
+### Data class
+- Créer la data class `LoginForm` qui contient un email et un password de type `String`
+- Créer la data class `TokenResponse` qui contient un token de type `String`
+
+### UserService
+- Ajouter un nouveau call réseau
+```kotlin
+@POST("users/login")
+suspend fun login(@Body user: UserLogin): Response<TokenResponse>
+```
+
+
+### Soumission du formulaire
+
+
 ## Signup
