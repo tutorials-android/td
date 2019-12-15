@@ -15,7 +15,7 @@ implementation "androidx.navigation:navigation-ui-ktx:2.1.0"
 
 ### Nouvelle activity
 - créer une nouvelle activity : `AuthenticationActivity`
-- Ajoutez la dans l'`AndroidManifest` et déclarer comme étant le point d'entrée de votre application (ce n'est plus MainActivity)
+- Ajoutez la dans l'`AndroidManifest` et déclarer la comme étant le point d'entrée de votre application (ce n'est plus MainActivity)
 
 - Le layout associé est un fragment de type `NavHostFragment`. A partir d'un graphe de navigation, le `NavHostFragment` va gerer la navigation...
 
@@ -47,8 +47,8 @@ Créer 3 nouveaux fragments et leur layout:
   - L'attribut `android:inputType` permet de gerer le type d'input (password par exemple)
 
 * SignupFragment
- - Plusieurs `EditText`: firstname, lastname, email, password, password_confirmation
- - Un bouton "S'enregistrer"
+  - Plusieurs `EditText`: firstname, lastname, email, password, password_confirmation
+  - Un bouton "S'enregistrer"
 
 ### La navigation !
 
