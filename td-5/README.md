@@ -1,23 +1,21 @@
-# TD 5: Register/Login et navigation
+# TD 5: SignUp/Login et Navigation
 
-## Navigation dans l'AuthenticationActivity
-
-
-### Ajout des dépendances
+## Ajout des dépendances
 
 Dans le fichier `app/build.gradle`, ajouter :
 
 ```groovy
+implementation "androidx.core:core-ktx:1.1.0"
 implementation "androidx.navigation:navigation-fragment-ktx:2.1.0"
 implementation "androidx.navigation:navigation-ui-ktx:2.1.0"
 ```
 
 
-### Nouvelle activity
-- créer une nouvelle activity : `AuthenticationActivity`
-- Ajoutez la dans l'`AndroidManifest` et déclarer la comme étant le point d'entrée de votre application (ce n'est plus MainActivity)
+## Nouvelle Activity
 
-- Le layout associé est un fragment de type `NavHostFragment`. A partir d'un graphe de navigation, le `NavHostFragment` va gerer la navigation...
+- Créer une nouvelle Activity : `AuthenticationActivity`
+- Ajoutez la dans l'`AndroidManifest` et déclarer la comme étant le point d'entrée de votre application (ce n'est plus MainActivity)
+- Remplacez le layout associé par un `<fragment...>` de type `NavHostFragment`: 
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -25,82 +23,89 @@ implementation "androidx.navigation:navigation-ui-ktx:2.1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_host_fragment"
-    android:name="androidx.navigation.fragment.NavHostFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:name="androidx.navigation.fragment.NavHostFragment"
     app:defaultNavHost="true"
     app:navGraph="@navigation/nav_graph" />
 ```
+À partir du graphe de navigation (`app:navGraph="@navigation/nav_graph"`), le `NavHostFragment` va gérer la navigation en remplaçant le fragment à chaque changement d'écran.
 
-Vous pouvez <kbd>Ctrl + enter</kbd> pour créer le fichier de navigation, nous y reviendrons plus tard.
+Vous pouvez utiliser <kbd>Alt + Enter</kbd> pour créer ce fichier de navigation, nous y reviendrons plus tard.
 
-### Les fragments
+## Nouveaux Fragments
+
 Créer 3 nouveaux fragments et leur layout:
 
-* AuthenticationFragment
-  - contient 2 buttons "Se connecter" et "S'enregistrer"
-
-* LoginFragment
-  - contient 2 `EditText`, un pour l'email, le second pour le password et un bouton "Se connecter"
+- `AuthenticationFragment`
+  - contient 2 buttons "Log in" et "Sign Up"
+- `LoginFragment`
+  - Contient 2 `EditText`, un pour l'email, le second pour le password et un bouton "Login"
   - L'attribut `android:hint` permet d'ajouter des placeholders
   - L'attribut `android:inputType` permet de gerer le type d'input (password par exemple)
+- `SignupFragment`
+  - Plusieurs `EditText`: `firstname, lastname, email, password, password_confirmation`
+  - Un bouton "Sign Up"
 
-* SignupFragment
-  - Plusieurs `EditText`: firstname, lastname, email, password, password_confirmation
-  - Un bouton "S'enregistrer"
-
-### La navigation !
+## Navigation
 
 - Si le fichier `navigation/nav_graph.xml` n'existe pas créez le dans le dossier `res`
-
-
-* Ajouter les 3 fragments précédents
-* Définissez `AuthenticationFragment` comme `start` (la petite maison)
-* Définissez ensuite les enchainements entre les fragments
-  - l'`AuthenticationFragment` permet d'ouvrir les 2 autres
-
-** Jettez un coup d'oeil à la vesion text, vous devriez remarquer 2 actions dans l'`onBoardingFragment`, ces actions vont permettre la navigation dans le code **
-
-
-### AuthenticationFragment
-- Dans le fragment, ajoutez des clickListener sur les 2 boutons `se connecter` et `s'enregisterr`
-- A présent, vous pouvez naviguer entre les fragments grace au `NavController`
+- Ajouter les 3 fragments précédents
+- Définissez `AuthenticationFragment` comme `Start Destination` (avec l'icône maison 🏠)
+- Définissez ensuite les enchainements entre les fragments: l'`AuthenticationFragment` permet d'ouvrir les 2 autres
+- Passez en mode `Text`, vous devriez remarquer 2 actions dans l'`AuthenticationFragment`: elles vont permettre la navigation dans le code  grace au `NavController` avec cette syntaxe:
 
 ```kotlin
-view.findNavController().navigate(R.id.action_onBoardingFragment_to_)
+findNavController().navigate(R.id.action_authenticationFragment_to_loginFragment)
+```
+- Dans `AuthenticationFragment`, ajoutez des clickListener sur les 2 boutons "Log in" et "Sign Up" qui vont executer ces navigations
+- À présent, vous pouvez naviguer entre les fragments 🎊
+
+## Login
+
+- Créer la `data class LoginForm` qui contient un email et un password de type `String`
+- Créer la `data class TokenResponse` qui contient un token de type `String`
+- Ajouter un nouveau call réseau dans `UserService`:
+
+```kotlin
+@POST("users/login")
+suspend fun login(@Body user: LoginForm): Response<TokenResponse>
 ```
 
+- Dans `LoginFragment` cliquer sur "Log in", doit:
+  - Vérifier que les champs sont remplis
+  - Créer une instance de `LoginForm`
+  - Envoyer le formulaire au serveur via la fonction `login` de `UserService`
+  - Si le call se passe bien, ajouter le token renvoyé dans les `SharedPreference` (cf plus bas) et affichez les taches de l'utilisateur
+  - Sinon, afficher un toast pour expliquer l'erreur: 
+
+```kotlin
+Toast.makeText(context, "text", Toast.LENGTH_LONG).show()
+```
+
+### SharedPreference
+
+- Créer un fichier `Constants.kt` qui va contenir les constantes utilisés par les `SharedPreference`:
+
+```kotlin
+const val SHARED_PREF_TOKEN_KEY = "auth_token_key"
+```
+
+- Pour stocker le token, la syntaxe est simplifiée gràce à `core-ktx`:
+(Normalement il faudrait commencer par un `.edit()` et finir par un `.apply()`)
+
+```kotlin
+PreferenceManager.getDefaultSharedPreferences(context).edit {
+    putString(SHARED_PREF_TOKEN_KEY, fetchedToken)
+}
+```
 
 ## Refacto de l'API
-Le but est de ne plus utiliser le `TOKEN` stocké en dur mais de le récuperer depuis le téléphone de l'utilisateur ~
 
-Pour cela dans l'`API`, nous allons avoir besoin d'un contexte, sauf qu'il s'agit d'un objet et que nous n'avons pas moyen de lui passer un contexte. De plus il faudrai faire de l'injection de dépendance pour pouvoir ajouter le contexte la ou on a besoin ou bien passé un contexte en argument partout..
+Le but est de remplacer le `TOKEN` en dur par celui stocké et le récuperé depuis les `SharedPreference`
 
-Pour vous éviter tout ça, nous avons décidé d'introduit un leak de mémoire volontairement en transformant l'`Api` en singleton initilialisé au lancement de l'application et qui contient le context de l'application
+Une bonne pratique serait ici l'injection de dépendance (avec Dagger2) mais pour faire simple nous allons transformer `Api` en singleton et l'initilialiser au lancement de l'app en lui passant le `Context` nécessaire pour utiliser les `SharedPreference`:
 
-**Ceci est exceptionnel, nous vous le deconseillons fortement dans des projets professionels**
-
-- Créer une classe App
-```kotlin
-class App: Application() {
-    override fun onCreate() {
-        super.onCreate()
-        Api.INSTANCE = Api(this)
-    }
-}
-
-```
-
-Dans l'AndroidManifest, ajoutez l'attribut name avec votre classe
-```kotlin
-    <application
-        android:name="path.to.App"
-        ....
-        />
-```
-
-- Dans l'`Api`
 ```kotlin
 class Api(private val context: Context) {
     companion object {
@@ -108,76 +113,47 @@ class Api(private val context: Context) {
         private const val TOKEN = "votre token"
         lateinit var INSTANCE: Api
     }
-
     // le reste ne change pas
 }
 ```
 
 
-- Partout ailleurs remplacer Api par Api.INSTANCE
-- votre application doit etre 100% fonctionnel, changer l'activity lancé au lancement de l'application pour vérfier
-
-
-## Login
-### Data class
-- Créer la data class `LoginForm` qui contient un email et un password de type `String`
-- Créer la data class `TokenResponse` qui contient un token de type `String`
-
-### UserService
-- Ajouter un nouveau call réseau
-```kotlin
-@POST("users/login")
-suspend fun login(@Body user: LoginForm): Response<TokenResponse>
-```
-
-
-### Soumission du formulaire
-- Ajouter un `clickListener` sur le bouton, qui appele une fonction `submitForm`
-* submitForm
-  - Vérifie que les champs sont remplis
-  - créer une instance de `LoginForm`
-  - Envoie le formulaire au serveur via la fonction `login` de `UserService`
-  - Si le call se passe bien, ajoutez le token renvoyé dans les `SharedPreference` (cf pus bas) et affichez les taches de l'utilisateur
-
-  - Si ça se passe mal, affiché un message à l'utilisateur lui indiquant qu'il y a une erreur
-
-
-### SharedPreference
-Créer un fichier `Constants.kt` qui va contenir les constantes utilisés pas les `SharedPreference`
-```kotlin
-const val SHARED_PREF_FILENAME = "tasks_preferences"
-const val SHARED_PREF_TOKEN_KEY = "auth_token_key"
-```
-
-* Pour stocker le token
-  - on récupere les sharedPref, qu'on ouvre en mode édition
-  - on set une valeur
-  - et on sauvegarde les changements
+- Créer une classe `App`
 
 ```kotlin
-val sharedPref = context?.getSharedPreferences("tasks_preferences", Context.MODE_PRIVATE)?.edit()
-sharedPref?.putString("JWT_TOKEN", it)
-sharedPref?.apply()
+class App: Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Api.INSTANCE = Api(this)
+    }
+}
 ```
 
+- Dans l'`AndroidManifest`, ajoutez l'attribut name avec votre classe `App`:
 
-### Modification Api
-- Dans l'api, supprimer la `const TOKEN` et ajouter une fonction (dans la classe) `token` qui récupere celui dans les SharedPreference !
-`sharedPreference.getString()`
+```xml
+    <application
+        android:name=".path.to.App"
+        .../>
+```
 
+- Partout ailleurs remplacer `Api` par `Api.INSTANCE`
+- Dans l'api, remplacer la `const TOKEN` par une fonction qui récupere celui qui est stocké (avec
+`sharedPreference.getString(...)`)
+- Tout devrait fonctionner ! 🙌
 
+## SignUp
 
-### AuthenticationFragment: Redirection
-Lorsque le user relance son application, il faut lui afficher directement la liste des taches !
-- Ajouter une vérification dans l'`AuthenticationFragment`, si un token existe dans les preferences, redigirer l'utilisateur vers la liste des taches !
+Faire comme pour le login mais avec une `data class SignUpForm` qui contient: `firstname, lastname, email, password, password_confirmation`
 
+## Un petit coup de polish
+### Redirection
 
-## Signup
-- data class `SignUpForm: firstname, lastname, email, password, password_confirmation`
-- Même étape que le login !
+Lorsque le user relance son application, il faut lui afficher directement la liste des tâches: vérifier dans l'`AuthenticationFragment` si un token existe
 
+### Déconnexion
 
+Ajouter un bouton pour se déconnecter qui efface le token dans les `SharedPreference` et renvoie au Login
 
-## Bonus : Déconnexion
-- Ajouter un bouton pour se déconnecter
-- Cela doit effacer le token existant dans les sharedPreference
+## Bonus
+Remplacer la navigation précédente avec des `Intent` par un `NavHost` et utiliser [SafeArgs](https://developer.android.com/guide/navigation/navigation-pass-data#Safe-args)
