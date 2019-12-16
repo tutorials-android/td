@@ -88,7 +88,19 @@ Ajouter une page "Settings" en utilisant un `PreferenceScreen`:
 - [Menus](https://developer.android.com/guide/topics/ui/menus)
 - [Settings](https://developer.android.com/guide/topics/ui/settings.html)
 
+## Deep linking
 
+Ouvrir l'application lorsque je partage une URl du style https://android-tasks-api.herokuapp.com/tasks/:id (id = JPtjCQPz7HTO6yK6Dal9)
+
+1. Ouvrir l'application
+1. Ouvrir un fragment (utiliser la navigation vu lors du td 5) avec un deep-link qui affiche les informations de la tache
+
+**documentation**
+- [Deep Link](https://developer.android.com/training/app-links/deep-linking)
+- [Deep link Navigation](https://developer.android.com/guide/navigation/navigation-deep-link)
+
+
+# OLD 
 ## RxJava : 
 Garder les mêmes fonctionnalités (list, add, edit, remove) mais en utilisant RxJava à la place des Coroutines et des LiveData
 
