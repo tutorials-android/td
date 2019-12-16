@@ -257,21 +257,9 @@ Créer une classe `TasksViewModel` qui hérite de `ViewModel`: elle contiendra l
 Vous pourrez la récupérer dans le fragment grâce au `ViewModelProviders`:
 
 ```kotlin
-class TasksViewModel: ViewModel() {
-  private val repository
-  private val tasks
-  val tasksAdapter
-  fun loadTasks() { ... }
-}
-
 class TasksFragment: Fragment() {
   private val tasksViewModel by lazy {
-    ViewModelProviders.of(this).get(TasksViewModel::class.java)
-  }
-
-  override fun onCreateView(...) {
-    // ...
-    view.tasks_recycler_view.adapter = tasksViewModel.tasksAdapter
+    ViewModelProvider(this).get(TasksViewModel::class.java)
   }
 
   override fun onResume(...) {
@@ -280,17 +268,26 @@ class TasksFragment: Fragment() {
   }
 }
 
+class TasksViewModel: ViewModel() {
+  private val repository
+  private val tasks
+  fun loadTasks() { 
+        viewModelScope {
+            repository.loadTasks()
+        }
+    }
+}
+
 class TasksRepository {
   private val tasksService = TaskApi.tasksService
-
+  
   suspend fun deleteTask(id: String): Boolean {
     val tasksResponse = tasksService.deleteTask(id)
     return tasksResponse.isSuccessful
   }
-
+  
   suspend fun loadTasks(): List<Task>? {
     val tasksResponse = tasksService.getTasks()
-
     return if (tasksResponse.isSuccessful) tasksResponse.body() else null
   }
 }
