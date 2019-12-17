@@ -16,7 +16,12 @@ Implémenter un cache des données serveur avec `Room`:
 ## Pagination
 Utiliser une PagedList pour afficher une liste infinie de tâche de façon efficace à la place de la RecyclerView actuelle qui n'affiche que la première page retournée par le serveur 
 
-**Documentation:** [Paging Library](https://developer.android.com/topic/libraries/architecture/paging)
+Pour rappel, il y a 2 parametres dans l'API permettant de récuperer les tâches: `per_page` et `page`
+
+**Documentation:** 
+
+- [Paging Library](https://developer.android.com/topic/libraries/architecture/paging)
+- [Tasks API](https://android-tasks-api.herokuapp.com/api-docs/index.html)
 
 
 ## Espresso (test de votre application):
