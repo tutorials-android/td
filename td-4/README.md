@@ -62,45 +62,49 @@ Glide.with(this).load("https://goo.gl/gEgYUd").into(image_view)
 private fun askCameraPermissionAndOpenCamera() {
   if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-      // Show an explanation to the user *asynchronously* -- don't block
-      // this thread waiting for the user's response! After the user
-      // sees the explanation, try again to request the permission.
-      ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE )
+        // l'OS dit d'expliquer pourquoi on a besoin de cette permission:
+        showDialogBeforeRequest()    
     } else {
-      // No explanation needed, we can request the permission.
-      ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE )
-      // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-      // app-defined int constant. The callback method gets the
-      // result of the request.
+        // l'OS ne demande pas d'explication, on demande directement:
+        requestCameraPermission()
     }
   } else {
     openCamera()
   }
 }
 
+private fun showDialogBeforeRequest() {
+    // Affiche une popup (Dialog) d'explications: 
+    AlertDialog.Builder(this).apply {
+        setMessage("On a besoin de la caméra sivouplé ! 🥺")
+        setPositiveButton(android.R.string.ok) { _, _ -> requestCameraPermission() }
+        setCancelable(true)
+        show()
+    }
+}
+
+private fun requestCameraPermission() {
+    // CAMERA_PERMISSION_CODE est défini par nous et sera récupéré dans onRequestPermissionsResult
+    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE )
+}
+
 private fun openCamera() {
-
+    // On va utiliser un Intent implicite
 }
-```
 
-- Prenez le temps de lire et comprendre cette fonction
-- Déclarer la constante `CAMERA_PERMISSION_CODE`:
-
-```kotlin
 companion object {
-  const val CAMERA_PERMISSION_CODE = 1000
+    const val CAMERA_PERMISSION_CODE = 42
 }
 ```
 
-`CAMERA_PERMISSION_CODE` est un code passé à la popup de permission qui sera repassé à la fonction `onRequestPermissionsResult` aprés la décision de l'utilisateur
-
+- Prenez le temps de lire et comprendre ce pavé 🤔
+- `CAMERA_PERMISSION_CODE` est un code passé à la popup de permission qui sera repassé à la fonction `onRequestPermissionsResult` aprés la décision de l'utilisateur
 
 - Implémenter la méthode `onRequestPermissionsResult`, si l'utilisateur à donné accès à la camera `PackageManager.PERMISSION_GRANTED`, ouvrez la camera sinon vous pouvez afficher un Toast 
 
 ```kotlin
 Toast.makeText(this, "We need access to your camera to take a picture :'(", Toast.LENGTH_LONG).show()
 ```
-
 
 #### Ouvrir la camera
 - Il est possible d'ouvrir des `Intent` et de récuperer des informations grâce à la fonction `startActivityForResult` qui est jumelée à la fonction `onActivityResult`
